@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f3ee">
+  <meta name="description" content="One note. One moment. A place for words that stay.">
+  <title>Nevernote — words that stay</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="Nevernote home"><span class="brand-mark">n.</span><span>nevernote</span></a>
+    <div class="top-actions">
+      <span id="session-label" class="session-label">A note that stays.</span>
+      <button id="sign-out" class="button button-quiet hidden" type="button">Sign out</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="eyebrow"><span class="eyebrow-line"></span> THE INTERNET'S LITTLE TIME CAPSULE</div>
+      <h1>Some words deserve<br><em>to stay.</em></h1>
+      <p class="hero-copy">Write one note. Leave it here. No edits, no take-backs — just a small piece of you, kept in time.</p>
+      <div class="hero-stats"><span><strong>ONE</strong> note per person</span><span class="stat-dot">·</span><span><strong>FOREVER</strong> in the archive</span></div>
+    </section>
+
+    <section id="write-section" class="write-card">
+      <div class="card-heading">
+        <div><div class="eyebrow">YOUR ONE NOTE</div><h2>Leave something behind.</h2></div>
+        <span class="lock-icon" aria-hidden="true">✳</span>
+      </div>
+      <div id="auth-panel">
+        <p class="card-intro">Create an account or sign in to write your note. Your account can publish exactly one.</p>
+        <form id="auth-form" class="auth-form">
+          <label>Email address<input id="email" type="email" autocomplete="email" placeholder="you@example.com" required></label>
+          <label>Password<input id="password" type="password" autocomplete="current-password" minlength="6" placeholder="At least 6 characters" required></label>
+          <div class="auth-actions">
+            <button class="button button-dark" type="submit" id="sign-in-button">Sign in</button>
+            <button class="button button-outline" type="button" id="sign-up-button">Create account</button>
+          </div>
+        </form>
+      </div>
+      <div id="compose-panel" class="hidden">
+        <p class="card-intro">Make it yours. Once you publish, it cannot be changed through this app.</p>
+        <form id="note-form">
+          <label class="sr-only" for="note-content">Your note</label>
+          <textarea id="note-content" maxlength="1000" rows="5" placeholder="If you could leave one thought for the world..." required></textarea>
+          <div class="compose-footer"><span id="char-count">0 / 1000</span><button id="publish-button" class="button button-dark" type="submit">Publish my note <span aria-hidden="true">↗</span></button></div>
+        </form>
+      </div>
+      <div id="already-posted" class="already-posted hidden"><span class="posted-check">✓</span><div><strong>Your words are here.</strong><p>You've already left your note. It stays as it is.</p></div></div>
+      <p id="status-message" class="status-message" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="archive-section">
+      <div class="archive-heading"><div><div class="eyebrow">THE PUBLIC ARCHIVE</div><h2>Notes from people, <em>everywhere.</em></h2></div><span id="note-count" class="note-count">Loading notes…</span></div>
+      <div id="notes-list" class="notes-grid" aria-live="polite"></div>
+      <p id="empty-state" class="empty-state hidden">The archive is quiet for now. Maybe your note will be the first.</p>
+    </section>
+  </main>
+
+  <footer><a class="brand footer-brand" href="#"><span class="brand-mark">n.</span><span>nevernote</span></a><span>One note. One moment. A little piece of forever.</span></footer>
+</body>
+</html>

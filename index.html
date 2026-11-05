@@ -35,12 +35,14 @@
         <span class="lock-icon" aria-hidden="true">✳</span>
       </div>
       <div id="auth-panel">
-        <p class="card-intro">Create an account or sign in to write your note. Your account can publish exactly one.</p>
+        <p class="card-intro">Jump straight in as a guest — no email or password needed. You can also create an account to sign in later.</p>
+        <div class="guest-action"><button class="button button-dark" type="button" id="guest-button">Continue as guest <span aria-hidden="true">↗</span></button></div>
+        <div class="auth-divider"><span>or use an account</span></div>
         <form id="auth-form" class="auth-form">
           <label>Email address<input id="email" type="email" autocomplete="email" placeholder="you@example.com" required></label>
           <label>Password<input id="password" type="password" autocomplete="current-password" minlength="6" placeholder="At least 6 characters" required></label>
           <div class="auth-actions">
-            <button class="button button-dark" type="submit" id="sign-in-button">Sign in</button>
+            <button class="button button-outline" type="submit" id="sign-in-button">Sign in</button>
             <button class="button button-outline" type="button" id="sign-up-button">Create account</button>
           </div>
         </form>

@@ -7,9 +7,10 @@ Nevernote is a minimal public archive where each account can publish one note of
 ## What's included
 
 - Responsive single-page interface
-- Supabase email/password sign-up and sign-in
+- Guest mode using Supabase anonymous authentication — no email or password required
+- Optional email/password sign-up and sign-in
 - Public archive, newest notes first
-- One-note-per-account enforcement in Postgres
+- One-note-per-account enforcement in Postgres (including guest sessions)
 - Row Level Security (RLS) for public reads and authenticated inserts
 - No client-facing update or delete policies
 
@@ -17,11 +18,15 @@ Nevernote is a minimal public archive where each account can publish one note of
 
 The frontend is configured to use the Nevernote Supabase project in Frankfurt. It uses the project's **publishable** key, which is designed to be included in browser applications. Never put a Supabase service-role key in frontend code.
 
+**Enable guest mode:** In the Supabase dashboard, open **Authentication → Sign In / Providers** (or **Auth → Providers**, depending on the dashboard layout) and enable **Anonymous Sign-Ins**. Guest mode uses Supabase anonymous users, so the existing authenticated insert policy and `user_id = auth.uid()` ownership model continue to protect notes. No database schema or RLS policy change is needed.
+
 The `public.notes` table contains:
 - `id`: generated UUID
-- `user_id`: the authenticated account, unique
+- `user_id`: the authenticated account (including anonymous guest users), unique
 - `content`: note text (1–1,000 characters)
-- `created_at`: submission timestamp
+- `created_at`: note submission timestamp
+
+A guest session is kept in that browser's local storage by Supabase. Guests can return in the same browser session, but clearing site data or switching browsers/devices loses access to that anonymous account and its note. Creating a regular account is the way to have a sign-in identity.
 
 ## Run locally
 
@@ -43,7 +48,7 @@ Then open http://localhost:8000.
 
 ## First-time sign-up
 
-Create an account with your email and a password. If Supabase asks you to confirm your email, follow the confirmation link before signing in.
+To use a regular account, create one with your email and a password. If Supabase asks you to confirm your email, follow the confirmation link before signing in. Or choose **Continue as guest** to start without credentials.
 
 ## Important limitation
 

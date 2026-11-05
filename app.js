@@ -150,7 +150,7 @@ noteForm.addEventListener("submit", async (event) => {
 });
 
 supabase.auth.onAuthStateChange(() => {
-  updateSession();
+  setTimeout(() => { updateSession(); }, 0);
 });
 await updateSession();
 await refreshNotes();

@@ -15,6 +15,7 @@ const noteContent = $("note-content");
 const publishButton = $("publish-button");
 const signInButton = $("sign-in-button");
 const signUpButton = $("sign-up-button");
+const guestButton = $("guest-button");
 
 function setMessage(message = "", type = "") {
   statusMessage.textContent = message;
@@ -26,6 +27,7 @@ function friendlyError(error) {
   if (/already registered/i.test(message)) return "That email already has an account. Try signing in.";
   if (/invalid login credentials/i.test(message)) return "Email or password doesn't look right.";
   if (/rate limit/i.test(message)) return "Too many attempts. Please wait a little and try again.";
+  if (/anonymous.*disabled|anonymous sign-ins are disabled/i.test(message)) return "Guest mode isn't enabled yet. The site owner needs to enable Anonymous Sign-Ins in Supabase Authentication settings.";
   if (/duplicate key|unique constraint/i.test(message)) return "This account has already published its one note.";
   return message;
 }
@@ -38,7 +40,7 @@ async function refreshNotes() {
     .limit(100);
   if (error) {
     $("note-count").textContent = "Archive unavailable";
-    $("notes-list").innerHTML = "";
+    $("notes-list").replaceChildren();
     return;
   }
   $("note-count").textContent = `${count ?? data.length} ${(count ?? data.length) === 1 ? "note" : "notes"}`;
@@ -61,7 +63,8 @@ async function refreshNotes() {
 
 async function updateSession() {
   const { data: { user } } = await supabase.auth.getUser();
-  $("session-label").textContent = user ? user.email : "A note that stays.";
+  $("session-label").textContent = user ? (user.is_anonymous ? "Guest session" : user.email) : "A note that stays.";
+  $("sign-out").textContent = user?.is_anonymous ? "End guest session" : "Sign out";
   $("sign-out").classList.toggle("hidden", !user);
   authPanel.classList.toggle("hidden", !!user);
   composePanel.classList.add("hidden");
@@ -89,6 +92,7 @@ async function authenticate(mode) {
   if (!email || !password) return setMessage("Enter your email and password.");
   signInButton.disabled = true;
   signUpButton.disabled = true;
+  guestButton.disabled = true;
   setMessage(mode === "signup" ? "Creating your account…" : "Signing you in…");
   try {
     if (mode === "signup") {
@@ -110,6 +114,25 @@ async function authenticate(mode) {
   } finally {
     signInButton.disabled = false;
     signUpButton.disabled = false;
+    guestButton.disabled = false;
+  }
+}
+
+async function startGuestSession() {
+  guestButton.disabled = true;
+  signInButton.disabled = true;
+  signUpButton.disabled = true;
+  setMessage("Starting a guest session…");
+  try {
+    const { error } = await supabase.auth.signInAnonymously();
+    if (error) throw error;
+    await updateSession();
+  } catch (error) {
+    setMessage(friendlyError(error));
+  } finally {
+    guestButton.disabled = false;
+    signInButton.disabled = false;
+    signUpButton.disabled = false;
   }
 }
 
@@ -118,6 +141,7 @@ authForm.addEventListener("submit", (event) => {
   authenticate("signin");
 });
 signUpButton.addEventListener("click", () => authenticate("signup"));
+guestButton.addEventListener("click", startGuestSession);
 $("sign-out").addEventListener("click", async () => {
   await supabase.auth.signOut();
   await updateSession();
@@ -134,7 +158,7 @@ noteForm.addEventListener("submit", async (event) => {
   setMessage("Leaving your note in the archive…");
   try {
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error("Please sign in again.");
+    if (!user) throw new Error("Please start a session again.");
     const { error } = await supabase.from("notes").insert({ user_id: user.id, content });
     if (error) throw error;
     noteContent.value = "";
